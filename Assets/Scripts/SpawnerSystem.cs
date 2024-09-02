@@ -66,18 +66,14 @@ public partial struct ProcessSpawnerJob : IJobEntity
             Ecb.SetComponent(chunkIndex, newEntity, LocalTransform.FromPosition(spawner.SpawnPosition));
 
             // Assign a random movement direction and speed using Unity.Mathematics.Random.
-            float3 randomDirection = math.normalize(new float3(
-                Random.NextFloat(-1f, 1f),
-                Random.NextFloat(-1f, 1f),
-                Random.NextFloat(-1f, 1f)
-            ));
+            float3 randomDirection = math.normalize(Random.NextFloat3(-1f, 1f));
             float randomSpeed = Random.NextFloat(1f, 5f);
 
             Ecb.AddComponent(chunkIndex, newEntity, new MovementComponent
             {
                 Direction = randomDirection,
                 Speed = randomSpeed,
-                NextDirectionChangeTime = ElapsedTime + 1.0
+                NextDirectionChangeTime = ElapsedTime
             });
 
             // Resets the next spawn time.
@@ -99,11 +95,7 @@ public partial struct MoveEntitiesJob : IJobEntity
         if (ElapsedTime >= movement.NextDirectionChangeTime)
         {
             // Generate a new random direction
-            movement.Direction = math.normalize(new float3(
-                Random.NextFloat(-1f, 1f),
-                Random.NextFloat(-1f, 1f),
-                Random.NextFloat(-1f, 1f)
-            ));
+            movement.Direction = math.normalize(Random.NextFloat3(-1f, 1f));
 
             // Update the time for the next direction change
             movement.NextDirectionChangeTime = ElapsedTime + 1.0;
