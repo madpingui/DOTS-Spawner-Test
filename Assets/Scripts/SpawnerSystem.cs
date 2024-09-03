@@ -14,10 +14,7 @@ public partial struct OptimizedSpawnerSystem : ISystem
     public void OnUpdate(ref SystemState state)
     {
         EntityCommandBuffer.ParallelWriter ecb = GetEntityCommandBuffer(ref state);
-
-        // Initialize the Random struct with a seed based on the elapsed time or any other unique value.
-        uint seed = (uint)(SystemAPI.Time.ElapsedTime * 1000);
-        var random = new Random(seed);
+        var random = Random.CreateFromIndex((uint)state.GlobalSystemVersion);
 
         // Creates a new instance of the job, assigns the necessary data, and schedules the job in parallel.
         new ProcessSpawnerJob
@@ -25,7 +22,6 @@ public partial struct OptimizedSpawnerSystem : ISystem
             ElapsedTime = SystemAPI.Time.ElapsedTime,
             Ecb = ecb,
             Random = random
-
         }.ScheduleParallel();
 
         // Move the entities based on their movement component.
